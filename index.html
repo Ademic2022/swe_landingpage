@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Engineer — Scalable Solutions</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1e1e1e;
+    --accent: #e8ff47;
+    --accent2: #47ffe8;
+    --text: #f0f0f0;
+    --muted: #666;
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-display);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.12s ease;
+    mix-blend-mode: difference;
+    opacity: 0.5;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* Grid background */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 48px;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,10,10,0.8);
+  }
+
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex; gap: 40px; list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    gap: 60px;
+  }
+
+  .hero-left { position: relative; }
+
+  .hero-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(52px, 6vw, 88px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+  }
+
+  h1 .line-accent { color: var(--accent); }
+  h1 .line-outline {
+    -webkit-text-stroke: 1px rgba(240,240,240,0.3);
+    color: transparent;
+  }
+
+  .hero-desc {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 420px;
+    margin-bottom: 48px;
+  }
+
+  .hero-cta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+
+  .btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 28px;
+    border: none;
+    cursor: none;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0a0a;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent2);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--accent);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Hero right — terminal-style card */
+  .hero-right {
+    position: relative;
+  }
+
+  .terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .terminal-bar {
+    background: var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .terminal-title {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .terminal-body {
+    padding: 24px;
+    line-height: 2;
+  }
+
+  .t-comment { color: #444; }
+  .t-key { color: var(--accent2); }
+  .t-val { color: var(--accent); }
+  .t-str { color: #b8a9ff; }
+  .t-num { color: #ff9f7f; }
+  .t-bool { color: #7fdfff; }
+
+  .blink {
+    animation: blink 1.2s infinite;
+    color: var(--accent);
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* Floating badge */
+  .badge {
+    position: absolute;
+    bottom: -20px; right: -20px;
+    background: var(--accent);
+    color: #0a0a0a;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 16px 20px;
+    border: 3px solid var(--bg);
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-8px) rotate(-2deg); }
+  }
+
+  /* SERVICES */
+  .services {
+    padding: 120px 48px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 64px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 32px;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h2 {
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: 80px;
+    font-weight: 800;
+    color: var(--border);
+    line-height: 1;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .service-card {
+    background: var(--bg);
+    padding: 40px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 2px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+
+  .service-card:hover::before { width: 100%; }
+  .service-card:hover { background: var(--surface); }
+
+  .service-icon {
+    font-size: 28px;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .service-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .service-desc {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* STATS */
+  .stats {
+    padding: 80px 48px;
+    background: var(--accent);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+  }
+
+  .stat {
+    padding: 48px 40px;
+    background: var(--accent);
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 64px;
+    font-weight: 800;
+    color: #0a0a0a;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    display: block;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: rgba(0,0,0,0.5);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 8px;
+    display: block;
+  }
+
+  /* ABOUT */
+  .about {
+    padding: 120px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .about-text p {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .about-text p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .stack-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px 16px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-align: center;
+    transition: all 0.2s;
+  }
+
+  .stack-item:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,255,71,0.05);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer p {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .footer-accent {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  /* Animations */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+    .hero-right { display: none; }
+    .services { padding: 80px 24px; }
+    .services-grid { grid-template-columns: 1fr 1fr; }
+    .stats { grid-template-columns: 1fr 1fr; padding: 40px 24px; }
+    .about { grid-template-columns: 1fr; padding: 80px 24px; gap: 48px; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 12px; text-align: center; }
+    .section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <div class="nav-logo">// ademic.dev</div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Software Engineer</div>
+    <h1>
+      Building<br>
+      <span class="line-accent">Scalable</span><br>
+      <span class="line-outline">Solutions</span>
+    </h1>
+    <p class="hero-desc">
+      Focused on designing and developing reliable systems that help businesses operate more efficiently and deliver better digital experiences.
+    </p>
+    <div class="hero-cta">
+      <a href="#services" class="btn btn-primary">View Services →</a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="dot dot-r"></span>
+        <span class="dot dot-y"></span>
+        <span class="dot dot-g"></span>
+        <span class="terminal-title">engineer.json</span>
+      </div>
+      <div class="terminal-body">
+        <span class="t-comment">// profile.json</span><br>
+        {<br>
+        &nbsp;&nbsp;<span class="t-key">"role"</span>: <span class="t-str">"Software Engineer"</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"focus"</span>: <span class="t-str">"Scalable Systems"</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"available"</span>: <span class="t-bool">true</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"services"</span>: [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Mobile Apps"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Web Applications"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"DevOps &amp; Infrastructure"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"Custom Software"</span><br>
+        &nbsp;&nbsp;],<br>
+        &nbsp;&nbsp;<span class="t-key">"goal"</span>: <span class="t-str">"Drive growth &amp; innovation"</span>,<br>
+        &nbsp;&nbsp;<span class="t-key">"status"</span>: <span class="t-str">"Building..."</span> <span class="blink">▌</span><br>
+        }
+      </div>
+    </div>
+    <div class="badge">Open for Projects</div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-header">
+    <div>
+      <div class="section-label">What We Do</div>
+      <h2>Our Services</h2>
+    </div>
+    <span class="section-num">01</span>
+  </div>
+  <div class="services-grid">
+    <div class="service-card fade-up">
+      <span class="service-icon">📱</span>
+      <div class="service-title">Mobile Development</div>
+      <p class="service-desc">Cross-platform mobile applications built for performance, scalability, and seamless user experience across iOS and Android.</p>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-icon">🌐</span>
+      <div class="service-title">Web Applications</div>
+      <p class="service-desc">Modern, high-performance web apps with robust backend systems, clean architecture, and responsive interfaces.</p>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-icon">⚙️</span>
+      <div class="service-title">DevOps & Infrastructure</div>
+      <p class="service-desc">End-to-end deployment pipelines, cloud infrastructure, containerization, and automation for reliable operations.</p>
+    </div>
+    <div class="service-card fade-up">
+      <span class="service-icon">🔧</span>
+      <div class="service-title">Custom Software</div>
+      <p class="service-desc">Tailored software systems designed around your business needs — from architecture to delivery and ongoing support.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <span class="stat-num">100%</span>
+    <span class="stat-label">Delivery Rate</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">4+</span>
+    <span class="stat-label">Service Areas</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">∞</span>
+    <span class="stat-label">Scalability</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">24/7</span>
+    <span class="stat-label">Infrastructure</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-text">
+    <div class="section-label">About</div>
+    <h2 style="margin-bottom:32px">Engineering<br>with Purpose</h2>
+    <p>
+      <strong>Software engineering focused on real-world impact.</strong> Every system built is designed to solve a genuine problem — not just to write code, but to create solutions that drive growth, efficiency, and innovation.
+    </p>
+    <p>
+      Together with a dedicated team, we handle everything from <strong>architecture and backend systems</strong> to deployment and automation — covering mobile, web, DevOps, and custom software across multiple platforms.
+    </p>
+    <p>
+      By combining <strong>strong engineering practices with modern technologies</strong>, we help transform ideas into fully functional products used by real users.
+    </p>
+  </div>
+  <div>
+    <div class="section-label" style="margin-bottom:20px">Tech Stack</div>
+    <div class="stack-grid">
+      <div class="stack-item">React</div>
+      <div class="stack-item">Node.js</div>
+      <div class="stack-item">Docker</div>
+      <div class="stack-item">Nginx</div>
+      <div class="stack-item">PostgreSQL</div>
+      <div class="stack-item">Redis</div>
+      <div class="stack-item">Flutter</div>
+      <div class="stack-item">TypeScript</div>
+      <div class="stack-item">CI/CD</div>
+      <div class="stack-item">AWS</div>
+      <div class="stack-item">OCI</div>
+      <div class="stack-item">Linux</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <p>© 2026 — All rights reserved</p>
+  <p class="footer-accent">// available for new projects</p>
+  <p style="font-family: var(--font-mono); font-size:12px; color: var(--muted);">152.67.156.101 — uk-london-1</p>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 5 + 'px';
+    cursor.style.top = my - 5 + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.style.transform = 'scale(3)');
+    el.addEventListener('mouseleave', () => cursor.style.transform = 'scale(1)');
+  });
+
+  // Fade up on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

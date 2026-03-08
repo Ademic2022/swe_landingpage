@@ -1,26 +1,134 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-bg: #0a0a0a;
+  --color-surface: #111111;
+  --color-text-warm: #f0f0f0;
+  --color-accent: #e8ff47;
+  --color-accent2: #47ffe8;
+  --color-muted: #666666;
+  --color-border-subtle: #1e1e1e;
+
+  --font-display: "Syne", var(--font-syne), sans-serif;
+  --font-mono: "DM Mono", var(--font-dm-mono), monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base ── */
+html {
+  background-color: #0a0a0a;
+  color: #f0f0f0;
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0a0a0a;
+  color: #f0f0f0;
+  font-family: "Syne", var(--font-syne), sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Grid background ── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Button styles ── */
+.btn-primary {
+  background-color: #e8ff47;
+  color: #0a0a0a;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  background-color: #47ffe8;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 #e8ff47;
+}
+.btn-ghost {
+  background: transparent;
+  color: #f0f0f0;
+  border: 1px solid #1e1e1e;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover {
+  border-color: #e8ff47;
+  color: #e8ff47;
+}
+
+/* ── Service card top-line hover ── */
+.service-card-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: #e8ff47;
+  transition: width 0.4s ease;
+}
+.service-card-top:hover::before {
+  width: 100%;
+}
+
+/* ── Stack item hover ── */
+.stack-item:hover {
+  border-color: #e8ff47;
+  color: #e8ff47;
+  background: rgba(232, 255, 71, 0.05);
+}
+
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+/* ── Keyframes ── */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(-2deg);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* ── Reduced motion override ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -11,7 +11,7 @@ export default function Navbar() {
         // ademic.dev
       </span>
       <ul className="flex gap-8 md:gap-10 list-none m-0 p-0">
-        {(["Services", "About", "Contact"] as const).map((link) => (
+        {(["Services", "About", "Team", "Contact"] as const).map((link) => (
           <li key={link}>
             <a
               href={`#${link.toLowerCase()}`}

@@ -1,6 +1,6 @@
 const TEAM = [
   {
-    name: "A. Ademic",
+    name: "A. Michael",
     role: "Lead Software Engineer",
     focus:
       "Architecture, backend systems, delivery, Cloud infrastructure, CI/CD",
